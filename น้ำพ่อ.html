@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ระบบสั่งซื้อสินค้า</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    input, button {
+      margin: 5px;
+      padding: 5px;
+    }
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+    tfoot td {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>ระบบสั่งซื้อสินค้า</h2>
+
+  <label>ชื่อสินค้า:</label>
+  <input type="text" id="productName">
+
+  <label>จำนวน:</label>
+  <input type="number" id="productQuantity" min="1" value="1">
+
+  <label>ราคาต่อหน่วย:</label>
+  <input type="number" id="productPrice" min="0" value="0" step="0.01">
+
+  <label>ชื่อผู้ซื้อ:</label>
+  <input type="text" id="buyerName">
+
+  <button id="orderBtn">สั่งซื้อ</button>
+
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>ชื่อสินค้า</th>
+        <th>จำนวน</th>
+        <th>ราคาต่อหน่วย</th>
+        <th>ราคารวม</th>
+        <th>ชื่อผู้ซื้อ</th>
+        <th>จัดการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- แถวคำสั่งซื้อจะเพิ่มที่นี่ -->
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3">รวมทั้งหมด</td>
+        <td id="grandTotal">0.00</td>
+        <td colspan="2"></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <script>
+    let totalSum = 0;
+
+    document.getElementById("orderBtn").addEventListener("click", function () {
+      const name = document.getElementById("productName").value.trim();
+      const quantity = parseInt(document.getElementById("productQuantity").value);
+      const price = parseFloat(document.getElementById("productPrice").value);
+      const buyer = document.getElementById("buyerName").value.trim();
+
+      if (!name || !buyer || quantity <= 0 || price < 0) {
+        alert("กรุณากรอกข้อมูลให้ถูกต้อง");
+        return;
+      }
+
+      const total = quantity * price;
+      totalSum += total;
+
+      const tbody = document.querySelector("#productTable tbody");
+      const newRow = tbody.insertRow();
+
+      newRow.insertCell(0).textContent = name;
+      newRow.insertCell(1).textContent = quantity;
+      newRow.insertCell(2).textContent = price.toFixed(2);
+      newRow.insertCell(3).textContent = total.toFixed(2);
+      newRow.insertCell(4).textContent = buyer;
+
+      const deleteCell = newRow.insertCell(5);
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "ลบ";
+      deleteBtn.onclick = function () {
+        totalSum -= total;
+        document.getElementById("grandTotal").textContent = totalSum.toFixed(2);
+        newRow.remove();
+      };
+      deleteCell.appendChild(deleteBtn);
+
+      document.getElementById("grandTotal").textContent = totalSum.toFixed(2);
+
+      // ล้าง input
+      document.getElementById("productName").value = '';
+      document.getElementById("productQuantity").value = 1;
+      document.getElementById("productPrice").value = 0;
+      document.getElementById("buyerName").value = '';
+    });
+  </script>
+</body>
+</html>
